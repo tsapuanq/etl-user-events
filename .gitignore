@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg
+*.egg-info/
+*.pyo
+*.pyd
+.Python
+
+# VSCode / Jupyter
+.vscode/
+.ipynb_checkpoints/
+.env
+*.ipynb
+
+# Airflow logs
+logs/
+*.log
+
+# Data files
+data/*.csv
+data/*.parquet
+data/*.feather
+
+# Airflow configs
+airflow.db
+unittests.cfg
+
+# PyCharm
+.idea/
+
+# OS files
+.DS_Store

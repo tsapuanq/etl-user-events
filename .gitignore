@@ -1,4 +1,3 @@
-# Python
 __pycache__/
 *.py[cod]
 *.egg
@@ -7,13 +6,11 @@ __pycache__/
 *.pyd
 .Python
 
-# VSCode / Jupyter
 .vscode/
 .ipynb_checkpoints/
 .env
 *.ipynb
 
-# Airflow logs
 logs/
 *.log
 
@@ -22,12 +19,7 @@ data/*.csv
 data/*.parquet
 data/*.feather
 
-# Airflow configs
 airflow.db
 unittests.cfg
 
-# PyCharm
-.idea/
-
-# OS files
 .DS_Store

@@ -3,7 +3,6 @@ import pandas as pd
 input_path = "/opt/airflow/data/data.csv"  
 output_path = "/opt/airflow/data/cleaned_user_events.csv"
 
-# Только нужные колонки
 use_columns = [
     'event_time', 'event_type', 'product_id', 'category_id',
     'category_code', 'brand', 'price', 'user_id', 'user_session'

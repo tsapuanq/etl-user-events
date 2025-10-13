@@ -36,31 +36,19 @@ WHERE rn <= 3
 ORDER BY month, purchase_count DESC;
 """
 
-# top 10 users with the highest growth in purchases 
+# top 10 users with highest growth in purchases
 top_users_query = """
-WITH monthly_purchases AS (
-    SELECT
-        user_id,
-        DATE_TRUNC('month', event_time)::DATE AS month,
-        COUNT(*) FILTER (WHERE event_type = 'purchase') AS purchases
-    FROM user_events
-    GROUP BY user_id, month
-),
-diffs AS (
-    SELECT
-        user_id,
-        MAX(CASE WHEN month = '2019-10-01' THEN purchases ELSE 0 END) AS oct_purchases,
-        MAX(CASE WHEN month = '2019-11-01' THEN purchases ELSE 0 END) AS nov_purchases
-    FROM monthly_purchases
-    GROUP BY user_id
-)
-SELECT
+SELECT 
     user_id,
-    oct_purchases,
-    nov_purchases,
-    nov_purchases - oct_purchases AS delta
-FROM diffs
-WHERE nov_purchases > oct_purchases
+    COUNT(*) FILTER (WHERE DATE_TRUNC('month', event_time) = '2019-10-01'::date) AS oct_purchases,
+    COUNT(*) FILTER (WHERE DATE_TRUNC('month', event_time) = '2019-11-01'::date) AS nov_purchases,
+    COUNT(*) FILTER (WHERE DATE_TRUNC('month', event_time) = '2019-11-01'::date)
+  - COUNT(*) FILTER (WHERE DATE_TRUNC('month', event_time) = '2019-10-01'::date) AS delta
+FROM user_events
+WHERE event_type = 'purchase'
+GROUP BY user_id
+HAVING COUNT(*) FILTER (WHERE DATE_TRUNC('month', event_time) = '2019-11-01'::date)
+     > COUNT(*) FILTER (WHERE DATE_TRUNC('month', event_time) = '2019-10-01'::date)
 ORDER BY delta DESC
 LIMIT 10;
 """

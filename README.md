@@ -1,3 +1,33 @@
+# Magnum Data Pipeline
+
+## Что сделано по шагам
+1. **Метаданные Kaggle.**
+   - Изучена карточка датасета [E-Commerce Events History in Cosmetics Shop](https://www.kaggle.com/datasets/mkechinov/ecommerce-events-history-in-cosmetics-shop) — зафиксированы названия колонок, типы событий и объём исходного CSV (~9 ГБ).
+   - В `eda.ipynb` сохранены заметки о составе данных и предварительные проверки.
+2. **Чтение исходного CSV в Python.**
+   - Скрипт `scripts/clean_data.py` реализует построчную обработку файла чанками по 50k строк, чтобы работать с большим объёмом без переполнения памяти.
+   - На этом этапе заполняются пропуски в `brand` и `category_code`, а строки без `user_session` удаляются.
+3. **Сохранение очищенных данных.**
+   - Результат сохраняется в `/opt/airflow/data/cleaned_user_events.csv`, который используется для последующей загрузки.
+   - Структура таблицы `user_events` описана и создаётся в `scripts/init_table.py`.
+4. **Аналитика через SQL.**
+   - Файл `scripts/run_analytics.py` запускает три SQL-запроса к PostgreSQL: топ-3 продукта по продажам в месяц, топ-10 пользователей по росту покупок и товары с высокой корзиной при низкой конверсии.
+   - Итоги выгружаются в CSV в каталоге `data/`.
+5. **Оркестрация через Airflow.**
+   - DAG `dags/upload_csv_dag.py` последовательно вызывает задачи `init_table → clean_data → load_csv → run_analytics`, обеспечивая end-to-end процесс.
+   - Используется образ `apache/airflow:2.8.1-python3.10`; инфраструктура развёрнута через `docker-compose.yml` и включает PostgreSQL и pgAdmin.
+
+## Структура репозитория
+- `dags/` — DAG Airflow.
+- `scripts/` — Python-скрипты подготовки, загрузки и аналитики.
+- `data/` — исходный CSV и итоговые отчёты.
+- `docker-compose.yml`, `entrypoint.sh`, `.env` — окружение для Airflow и PostgreSQL.
+
+## Заметки
+- Большой CSV требуется положить вручную в `data/data.csv` перед запуском.
+- Для аналитики используется только SQL; pandas задействован исключительно для чтения и сохранения результатов.
+- После загрузки рекомендуется обновлять статистику PostgreSQL (`VACUUM ANALYZE user_events;`) для ускорения повторных аналитических запросов.
+
 # Airflow ETL Pipeline: User Events
 <img width="640" height="256" alt="image" src="https://github.com/user-attachments/assets/bdd283c1-644f-49dc-aebc-ead226169572" />
 
